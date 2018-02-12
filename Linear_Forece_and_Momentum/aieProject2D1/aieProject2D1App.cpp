@@ -4,8 +4,6 @@
 #include "Input.h"
 #include <glm\ext.hpp>
 #include <Gizmos.h>
-#include <gl_core_4_4.h>
-#include <imgui.h>
 
 aieProject2D1App::aieProject2D1App() {
 
@@ -27,7 +25,7 @@ bool aieProject2D1App::startup() {
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0, -10));
+	m_physicsScene->setGravity(glm::vec2(0, 0));
 	m_physicsScene->setTimeStep(0.01f);
 
 	float radius = 1.0f;
@@ -39,19 +37,24 @@ bool aieProject2D1App::startup() {
 
 	setupConinuousDemo(startPos, inclination, speed, -10);
 
-	//Sphere* ball;
-	//Sphere* ball1;
-	//ball = new Sphere(glm::vec2(-20, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
-	//ball1 = new Sphere(glm::vec2(10, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
-	//m_physicsScene->addActor(ball);
-	//m_physicsScene->addActor(ball1);
-	//
-	//ball->applyForce(glm::vec2(15, 0));
-	//ball1->applyForce(glm::vec2(-30, 0));
+	Sphere* ball;
+	Sphere* ball1;
+	ball = new Sphere(glm::vec2(-20, 5), glm::vec2(0, 0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
+	ball1 = new Sphere(glm::vec2(10, 5), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+	m_physicsScene->addActor(ball);
+	m_physicsScene->addActor(ball1);
+	
+	ball->applyForce(glm::vec2(15, 0));
+	ball1->applyForce(glm::vec2(-30, 0));
+
+	Plane* plane;
+	plane = new Plane(glm::vec2(0,1), 0);
+	m_physicsScene->addActor(plane);
+
 	//ball->applyForceToActor(ball1, glm::vec2(2,0));
 
-	rocket = new Rocket(glm::vec2(0,0), glm::vec2(0,0), 4000.0f, 10, glm::vec4(1, 0, 0, 1));
-	m_physicsScene->addActor(rocket);
+	//rocket = new Rocket(glm::vec2(0,0), glm::vec2(0,0), 4000.0f, 10, glm::vec4(1, 0, 0, 1));
+	//m_physicsScene->addActor(rocket);
 
 	return true;
 }
@@ -91,6 +94,8 @@ void aieProject2D1App::update(float deltaTime) {
 
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
+
+	//m_physicsScene->sphere2Sphere(ball, ball1);
 
 	// exhaust for rocket
 	if (input->isKeyDown(aie::INPUT_KEY_SPACE))
