@@ -4,6 +4,8 @@
 #include "Input.h"
 #include <glm\ext.hpp>
 #include <Gizmos.h>
+#include <gl_core_4_4.h>
+#include <imgui.h>
 
 aieProject2D1App::aieProject2D1App() {
 
