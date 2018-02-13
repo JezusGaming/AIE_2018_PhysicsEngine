@@ -1,9 +1,16 @@
 #include "Box.h"
 #include <Gizmos.h>
 
-
-Box::Box(glm::vec2 position, glm::vec2 velocity, float mass, float width, float hight, glm::vec4 colour) : Rigidbody(BOX, position, velocity, width, hight, mass)
+Box::Box(glm::vec2 position, glm::vec2 velocity, float mass, float width, float hight, glm::vec4 colour) : Rigidbody(ShapeType::BOX, position, velocity, 0, mass)
 {
+	m_width = width;
+	m_hight = hight;
+
+	m_dimensions = glm::vec2(m_width, m_hight);
+	/*m_min = glm::vec2(position.x - (width * 0.5f), position.y - (hight * 0.5f));
+	m_max = glm::vec2(position.x + (width * 0.5f), position.y + (hight * 0.5f));*/
+
+	m_colour = colour;
 }
 
 Box::~Box()

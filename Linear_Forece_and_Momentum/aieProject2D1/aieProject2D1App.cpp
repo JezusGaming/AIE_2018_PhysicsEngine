@@ -37,19 +37,33 @@ bool aieProject2D1App::startup() {
 
 	setupConinuousDemo(startPos, inclination, speed, -10);
 
-	Sphere* ball;
-	Sphere* ball1;
-	ball = new Sphere(glm::vec2(-20, 5), glm::vec2(0, 0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
-	ball1 = new Sphere(glm::vec2(10, 5), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
-	m_physicsScene->addActor(ball);
-	m_physicsScene->addActor(ball1);
+	//Sphere* ball;
+	//Sphere* ball1;
+	//ball = new Sphere(glm::vec2(-20, 5), glm::vec2(0, 0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
+	//ball1 = new Sphere(glm::vec2(10, 5), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+	//m_physicsScene->addActor(ball);
+	//m_physicsScene->addActor(ball1);
 	
-	ball->applyForce(glm::vec2(15, 0));
-	ball1->applyForce(glm::vec2(-30, 0));
+	//ball->applyForce(glm::vec2(-15, 0));
+	//ball1->applyForce(glm::vec2(-30, 0));
+
+	//m_physicsScene->addActor(ball);
+	//m_physicsScene->addActor(ball1);
 
 	Plane* plane;
 	plane = new Plane(glm::vec2(0,1), 0);
 	m_physicsScene->addActor(plane);
+
+	Box* box;
+	/*Box* box1;*/
+	box = new Box(glm::vec2(-10, 10), glm::vec2(0, 0), 4.0f, 4, 4, glm::vec4(1, 0, 0, 1));
+	/*box1 = new Box(glm::vec2(10, 5), glm::vec2(0, 0), 4.0f, 4, 4, glm::vec4(0, 1, 0, 1));*/
+	
+	box->applyForce(glm::vec2(0, -10));
+	/*box1->applyForce(glm::vec2(-30, 0));*/
+
+	m_physicsScene->addActor(box);
+	/*m_physicsScene->addActor(box1);*/
 
 	//ball->applyForceToActor(ball1, glm::vec2(2,0));
 
@@ -169,7 +183,7 @@ void aieProject2D1App::draw() {
 
 	// draw your stuff here!
 	static float aspectRatio = 16 / 9.f;
-	aie::Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
+	aie::Gizmos::draw2D(glm::ortho<float>(-50, 50, -50 / aspectRatio, 50 / aspectRatio, -1.0f, 1.0f));
 	//aie::Gizmos::draw2D(glm::ortho<float>(-640, 640, -640 / aspectRatio, 640 / aspectRatio, -1.0f, 1.0f)); // pixel perfect for 1280 /720
 	
 	// output some text, uses the last used colour

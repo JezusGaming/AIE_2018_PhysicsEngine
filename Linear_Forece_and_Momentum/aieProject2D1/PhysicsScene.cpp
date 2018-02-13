@@ -6,6 +6,7 @@
 #include <list>
 #include "Sphere.h"
 #include "Plane.h"
+#include "Box.h"
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
 
 PhysicsScene::PhysicsScene() : m_timeStep(0.01f), m_gravity(glm::vec2(0,0))
@@ -66,7 +67,7 @@ bool PhysicsScene::plane2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 
 bool PhysicsScene::plane2AABB(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-	return false;
+	return AABB2Plane(obj2, obj1);
 }
 
 bool PhysicsScene::sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
@@ -120,22 +121,75 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 
 bool PhysicsScene::sphere2AABB(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Sphere *sphere1 = dynamic_cast<Sphere*>(obj1);
+	Box *box1 = dynamic_cast<Box*>(obj2);
+
+	if (box1 != nullptr && sphere1 != nullptr)
+	{
+		glm::vec2 A = glm::clamp(sphere1->getPostition(), box1->getMin(), box1->getMax());
+		glm::vec2 V = A - sphere1->getPostition();
+		
+		if (glm::length(V) <= sphere1->getRadius())
+		{
+			sphere1->setVelocity(glm::vec2(0, 0));
+			box1->setVelocity(glm::vec2(0, 0));
+		}
+	}
 	return false;
 }
 
 bool PhysicsScene::AABB2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Box *box = dynamic_cast<Box*>(obj1);
+	Plane *plane = dynamic_cast<Plane*>(obj2);
+
+	if (box != nullptr && plane != nullptr)
+	{
+		glm::vec2 v = plane->getNormal();
+		glm::vec2 bottomLeft = box->getMin();
+		glm::vec2 bottomRight = box->getMin() + glm::vec2(box->getWidth(), 0);
+		glm::vec2 topLeft = box->getMin() + glm::vec2(0, box->getHight());
+		glm::vec2 topRight = box->getMax() + glm::vec2(box->getWidth(), box->getHight());
+
+		if (glm::dot(v, bottomLeft) - plane->getDistance() < 0 ||
+			glm::dot(v, bottomRight) - plane->getDistance() < 0 ||
+			glm::dot(v, topLeft) - plane->getDistance() < 0 ||
+			glm::dot(v, topLeft) - plane->getDistance() < 0)
+		{
+			box->setVelocity(glm::vec2(0, 0));
+		}
+	}
+
 	return false;
 }
 
 bool PhysicsScene::AABB2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-	return false;
+	return sphere2AABB(obj2, obj1);
 }
 
 bool PhysicsScene::AABB2AABB(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Box *box1 = dynamic_cast<Box*>(obj1);
+	Box *box2 = dynamic_cast<Box*>(obj2);
 
+	if (box1 != nullptr && box2 != nullptr)
+	{
+		glm::vec2 max1 = box1->getMax();
+		glm::vec2 min1 = box1->getMin();
+		glm::vec2 max2 = box2->getMax();
+		glm::vec2 min2 = box2->getMin();
+
+		if (min1.x <= max2.x &&
+			min1.y <= max2.y &&
+			max1.x >= min2.x &&
+			max1.y >= min2.y)
+		{
+			box1->setVelocity(glm::vec2(0, 0));
+			box2->setVelocity(glm::vec2(0, 0));
+			return true;
+		}
+	}
 	return false;
 }
 

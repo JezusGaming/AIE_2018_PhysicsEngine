@@ -6,6 +6,7 @@
 #include "Sphere.h"
 #include "Rocket.h"
 #include "Plane.h"
+#include "Box.h"
 
 class aieProject2D1App : public aie::Application {
 public:
