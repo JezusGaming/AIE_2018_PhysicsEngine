@@ -91,7 +91,8 @@ bool PhysicsScene::sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = sphere->getRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
-			sphere->setVelocity(glm::vec2(0, 0));
+			plane->resolveCollision(sphere);
+			//sphere->setVelocity(glm::vec2(0, 0));
 			return true;
 		}
 	}
@@ -111,8 +112,9 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 
 		if (glm::length(distance) <= radiusTotal) 
 		{
-			sphere1->setVelocity(glm::vec2(0,0));
-			sphere2->setVelocity(glm::vec2(0,0));
+			sphere1->resolveCollision(sphere2);
+			//sphere1->setVelocity(glm::vec2(0, 0));
+			//sphere2->setVelocity(glm::vec2(0, 0));
 			return true;
 		}
 	}
@@ -131,8 +133,7 @@ bool PhysicsScene::sphere2AABB(PhysicsObject* obj1, PhysicsObject* obj2)
 		
 		if (glm::length(V) <= sphere1->getRadius())
 		{
-			sphere1->setVelocity(glm::vec2(0, 0));
-			box1->setVelocity(glm::vec2(0, 0));
+			sphere1->resolveCollision(box1);
 		}
 	}
 	return false;
@@ -156,7 +157,8 @@ bool PhysicsScene::AABB2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 			glm::dot(v, topLeft) - plane->getDistance() < 0 ||
 			glm::dot(v, topLeft) - plane->getDistance() < 0)
 		{
-			box->setVelocity(glm::vec2(0, 0));
+			plane->resolveCollision(box);
+			return true;
 		}
 	}
 
@@ -185,8 +187,7 @@ bool PhysicsScene::AABB2AABB(PhysicsObject* obj1, PhysicsObject* obj2)
 			max1.x >= min2.x &&
 			max1.y >= min2.y)
 		{
-			box1->setVelocity(glm::vec2(0, 0));
-			box2->setVelocity(glm::vec2(0, 0));
+			box1->resolveCollision(box2);
 			return true;
 		}
 	}

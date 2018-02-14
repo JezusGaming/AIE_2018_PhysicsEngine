@@ -1,7 +1,7 @@
 #include "Box.h"
 #include <Gizmos.h>
 
-Box::Box(glm::vec2 position, glm::vec2 velocity, float mass, float width, float hight, glm::vec4 colour) : Rigidbody(ShapeType::BOX, position, velocity, 0, mass)
+Box::Box(glm::vec2 position, glm::vec2 velocity, float mass, float width, float hight, glm::vec4 colour) : Rigidbody(ShapeType::BOX, position, velocity, 0, mass, 0.2f, 0.2f, 0.8f)
 {
 	m_width = width;
 	m_hight = hight;
