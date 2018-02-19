@@ -30,6 +30,5 @@ protected:
 	float m_angularDrag;
 	float m_angularVelocity;
 	float m_elasticity;
-
 };
 

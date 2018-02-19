@@ -53,9 +53,9 @@ bool aieProject2D1App::startup() {
 	Plane* plane;
 	Plane* plane1;
 	Plane* plane2;
-	plane = new Plane(glm::normalize(glm::vec2(10,10)), 10);
-	plane1 = new Plane(glm::normalize(glm::vec2(20, 0)), -10);
-	plane2 = new Plane(glm::normalize(glm::vec2(0, 20)), -20);
+	plane = new Plane(glm::normalize(glm::vec2(10,-10)), -40);
+	plane1 = new Plane(glm::normalize(glm::vec2(-30, 0)), -40);
+	plane2 = new Plane(glm::normalize(glm::vec2(0, 30)),-40);
 	m_physicsScene->addActor(plane);
 	m_physicsScene->addActor(plane1);
 	m_physicsScene->addActor(plane2);
@@ -65,7 +65,7 @@ bool aieProject2D1App::startup() {
 	box = new Box(glm::vec2(-10, 25), glm::vec2(0, 0), 4.0f, 4, 4, glm::vec4(1, 0, 0, 1));
 	box1 = new Box(glm::vec2(10, 25), glm::vec2(0, 0), 4.0f, 4, 4, glm::vec4(0, 1, 0, 1));
 	
-	box->applyForce(glm::vec2(0, -10));
+	box->applyForce(glm::vec2(10, 0));
 	box1->applyForce(glm::vec2(-30, 0));
 
 	m_physicsScene->addActor(box);
