@@ -49,7 +49,7 @@ bool aieProject3D1App::startup() {
 	box1->applyForce(glm::vec3(-10, 0, 0));
 	m_physicsScene->addActor(box);
 	m_physicsScene->addActor(box1);
-
+	// TODO
 	Plane3D* plane;
 	plane = new Plane3D(glm::normalize(glm::vec3(0, 1, 0)), 0);
 	m_physicsScene->addActor(plane);

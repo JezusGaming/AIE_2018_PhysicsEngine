@@ -20,7 +20,7 @@ public:
 	void setVelocity(glm::vec2 vel) { m_velocity = vel; }
 	float getElasticity() { return m_elasticity; }
 	void resolveCollision(Rigidbody* actor2);
-
+	// TODO rotation tutorial
 protected:
 	glm::vec2 m_postition;
 	glm::vec2 m_velocity;
