@@ -150,7 +150,7 @@ bool PhysicsScene::AABB2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		glm::vec2 bottomLeft = box->getMin();
 		glm::vec2 bottomRight = box->getMin() + glm::vec2(box->getWidth(), 0);
 		glm::vec2 topLeft = box->getMin() + glm::vec2(0, box->getHight());
-		glm::vec2 topRight = box->getMax() + glm::vec2(box->getWidth(), box->getHight());
+		glm::vec2 topRight = box->getMax();
 
 		if (glm::dot(v, bottomLeft) - plane->getDistance() < 0 ||
 			glm::dot(v, bottomRight) - plane->getDistance() < 0 ||

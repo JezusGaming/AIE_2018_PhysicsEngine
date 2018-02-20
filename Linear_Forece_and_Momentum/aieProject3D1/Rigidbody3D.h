@@ -4,13 +4,13 @@
 class Rigidbody3D : public PhysicsObject3D
 {
 public:
-	Rigidbody3D(ShapeType shapeID, glm::vec3 position, glm::vec3 velocity, float rotation, float mass, float linearDrag, float angularDrag, float elasticity);
+	Rigidbody3D(ShapeType shapeID, glm::vec3 position, glm::vec3 velocity, float rotation, float mass);
 	~Rigidbody3D();
 
 	virtual void fixedUpdate(glm::vec3 gravity, float timeStep);
 	virtual void debug();
-	void applyForce(glm::vec3 force);
-	void applyForceToActor(Rigidbody3D* actor2, glm::vec3 force);
+	void applyForce(glm::vec3 force, glm::vec3 pos);
+	//void applyForceToActor(Rigidbody3D* actor2, glm::vec3 force);
 
 	//virtual bool CheckCollision(PhysicsObject* pOther) = 0;
 
@@ -20,7 +20,7 @@ public:
 	float getMass() { return m_mass; }
 	void setVelocity(glm::vec3 vel) { m_velocity = vel; }
 	float getElasticity() { return m_elasticity; }
-	void resolveCollision(Rigidbody3D* actor2);
+	void resolveCollision(Rigidbody3D* actor2, glm::vec3 contact, glm::vec3*collisionormal=nullptr);
 
 protected:
 	glm::vec3 m_postition;
@@ -31,5 +31,6 @@ protected:
 	float m_angularDrag;
 	float m_angularVelocity;
 	float m_elasticity;
+	float m_moment;
 };
 

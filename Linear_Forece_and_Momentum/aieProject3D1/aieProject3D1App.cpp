@@ -34,21 +34,21 @@ bool aieProject3D1App::startup() {
 
 	Sphere3D* sphere;
 	Sphere3D* sphere1;
-	sphere = new Sphere3D(glm::vec3(5, 5, 0), glm::vec3(0, 0, 0), 3.0f, 2, glm::vec4(1, 0, 0, 1));
-	sphere1 = new Sphere3D(glm::vec3(-5, 5, 0), glm::vec3(0, 0, 0), 3.0f, 2, glm::vec4(0, 1, 0, 1));
-	sphere->applyForce(glm::vec3(-10, 0, 0));
-	sphere1->applyForce(glm::vec3(10, 0, 0));
+	sphere = new Sphere3D(glm::vec3(5, 5, 0), glm::vec3(-10, 0, 0), 3.0f, 2, glm::vec4(1, 0, 0, 1));
+	sphere1 = new Sphere3D(glm::vec3(-5, 5, 0), glm::vec3(10, 0, 0), 3.0f, 2, glm::vec4(0, 1, 0, 1));
+	//sphere->applyForce(glm::vec3(-10, 0, 0));
+	//sphere1->applyForce(glm::vec3(10, 0, 0));
 	m_physicsScene->addActor(sphere);
 	m_physicsScene->addActor(sphere1);
 
-	Box3D* box;
-	Box3D* box1;
-	box = new Box3D(glm::vec3(-5, 10, 0), glm::vec3(0, 0, 0), 4.0f, 2, 2, 2, glm::vec4(1, 0, 0, 1));
-	box1 = new Box3D(glm::vec3(5, 10, 0), glm::vec3(0, 0, 0), 4.0f, 2, 2, 2, glm::vec4(0, 1, 0, 1));
-	box->applyForce(glm::vec3(10, 0, 0));
-	box1->applyForce(glm::vec3(-10, 0, 0));
-	m_physicsScene->addActor(box);
-	m_physicsScene->addActor(box1);
+	//Box3D* box;
+	//Box3D* box1;
+	//box = new Box3D(glm::vec3(-5, 10, 0), glm::vec3(10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(1, 0, 0, 1));
+	//box1 = new Box3D(glm::vec3(5, 10, 0), glm::vec3(-10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(0, 1, 0, 1));
+	//box->applyForce(glm::vec3(10, 0, 0));
+	//box1->applyForce(glm::vec3(-10, 0, 0));
+	//m_physicsScene->addActor(box);
+	//m_physicsScene->addActor(box1);
 	// TODO
 	Plane3D* plane;
 	plane = new Plane3D(glm::normalize(glm::vec3(0, 1, 0)), 0);
