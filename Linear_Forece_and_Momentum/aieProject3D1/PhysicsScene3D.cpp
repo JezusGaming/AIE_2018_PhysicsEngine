@@ -7,6 +7,7 @@
 #include "Sphere3D.h"
 #include "Plane3D.h"
 #include "Box3D.h"
+#include "BoxOOB.h"
 typedef bool(*fn)(PhysicsObject3D*, PhysicsObject3D*);
 
 PhysicsScene3D::PhysicsScene3D() : m_timeStep(0.01f), m_gravity(glm::vec3(0, 0, 0))
@@ -27,6 +28,7 @@ static fn collisionFunctionArray[] =
 	PhysicsScene3D::plane2Plane, PhysicsScene3D::plane2Sphere, PhysicsScene3D::plane2AABB,
 	PhysicsScene3D::sphere2Plane, PhysicsScene3D::sphere2Sphere, PhysicsScene3D::sphere2AABB,
 	PhysicsScene3D::AABB2Plane, PhysicsScene3D::AABB2Sphere, PhysicsScene3D::AABB2AABB,
+	PhysicsScene3D::Box2Box, PhysicsScene3D::Box2Sphere, PhysicsScene3D::Box2Plane
 };
 
 void PhysicsScene3D::checkForCollision()
@@ -190,6 +192,95 @@ bool PhysicsScene3D::AABB2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 		{
 			//box1->resolveCollision(box2);
 			return true;
+		}
+	}
+	return false;
+}
+
+bool PhysicsScene3D::Box2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+{
+	return false;
+}
+
+bool PhysicsScene3D::Box2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+{
+	BoxOOB* box = dynamic_cast<BoxOOB*>(obj1);
+	Sphere3D* sphere = dynamic_cast<Sphere3D*>(obj2);
+
+	if (box != nullptr && sphere != nullptr)
+	{
+
+	}
+	return false;
+}
+
+bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+{
+	BoxOOB *box = dynamic_cast<BoxOOB*>(obj1);
+	Plane3D *plane = dynamic_cast<Plane3D*>(obj2);
+
+	//if we are successful then test for collision
+	if (box != nullptr && plane != nullptr)
+	{
+		int numContacts = 0;
+		glm::vec3 contact(0, 0, 0);
+		float contactV = 0;
+		float radius = 0.5f * fminf(box->getWidth(), box->getHight());
+
+		// which side is the centre of mass on?
+		glm::vec3 planeOrigin = plane->getNormal() * plane->getDistance();
+		float comFromPlane = glm::dot(box->getPostition() - planeOrigin, plane->getNormal());
+
+		// check all four corners to see if we've hit the plane
+		for (float x = -box->getDimensions().x; x < box->getWidth(); x += box->getWidth())
+		{
+			for (float y = -box->getDimensions().y; y < box->getHight(); y += box->getHight())
+			{
+				for (float z = -box->getDimensions().z; z < box->getDepth(); z += box->getDepth())
+				{
+					// get the position of the corner in world space
+					glm::vec3 p = box->getPostition() + x * box->getLocalX() + y * box->getLocalY() + z * box->getLocalZ();
+
+					float distFromPlane = glm::dot(p - planeOrigin, plane->getNormal());
+
+					// this is the total velocity of the point
+					float velocityIntoPlane = glm::dot(box->getVelocity() + box->getRotation() * (-y * box->getLocalX() + x * box->getLocalY() + z * box->getLocalZ()), plane->getNormal());
+
+					// if this corner is on the opposite side from the COM,
+					// and moving further in, we need to resolve the collision
+					if ((distFromPlane > 0 && comFromPlane < 0 && velocityIntoPlane > 0) ||
+						(distFromPlane < 0 && comFromPlane > 0 && velocityIntoPlane > 0)) 
+					{
+						numContacts++;
+						contact += p;
+						contactV += velocityIntoPlane;
+					}
+				}
+			}
+		}
+		// we've had a hit - typically only two corners can contact
+		if (numContacts > 0)
+		{
+			// get the average collision velocity into the plane
+			// (covers linear and rotational velocity of all corners involved)
+			float collisionV = contactV / (float)numContacts;
+
+			// get the acceleration required to stop (restitution = 0) or reverse
+			// (restitution = 1) the average velocity into the plane
+			glm::vec3 acceleration = -plane->getNormal() * ((1.0f + box->getElasticity()) * collisionV);
+			// and the average position at which we'll apply the force
+			// (corner or edge centre)
+			glm::vec3 localContact = (contact / (float)numContacts) - box->getPostition();
+			// this is the perpendicular distance we apply the force at relative to
+			// the COM, so Torque = F*r
+			float r = glm::dot(localContact, glm::vec3(plane->getNormal().y, -plane->getNormal().x, plane->getNormal().z));
+
+			// work out the "effective mass" - this is a combination of moment of
+			// inertia and mass, and tells us how much the contact point velocity
+			// will change with the force we're applying
+			float mass0 = 1.0f / (1.0f / box->getMass() + (r*r) / box->getMoment());
+			// and apply the force
+			box->applyForce(acceleration * mass0, localContact);
 		}
 	}
 	return false;

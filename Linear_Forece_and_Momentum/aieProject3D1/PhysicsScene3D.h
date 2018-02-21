@@ -34,6 +34,9 @@ public:
 	static bool AABB2Plane(PhysicsObject3D*, PhysicsObject3D*);
 	static bool AABB2Sphere(PhysicsObject3D*, PhysicsObject3D*);
 	static bool AABB2AABB(PhysicsObject3D*, PhysicsObject3D*);
+	static bool Box2Box(PhysicsObject3D*, PhysicsObject3D*);
+	static bool Box2Sphere(PhysicsObject3D*, PhysicsObject3D*);
+	static bool Box2Plane(PhysicsObject3D*, PhysicsObject3D*);
 
 protected:
 	glm::vec3 m_gravity;

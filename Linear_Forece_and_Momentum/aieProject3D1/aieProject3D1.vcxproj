@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="aieProject3D1App.cpp" />
     <ClCompile Include="Box3D.cpp" />
+    <ClCompile Include="BoxOOB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsObject3D.cpp" />
     <ClCompile Include="PhysicsScene3D.cpp" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="aieProject3D1App.h" />
     <ClInclude Include="Box3D.h" />
+    <ClInclude Include="BoxOOB.h" />
     <ClInclude Include="PhysicsObject3D.h" />
     <ClInclude Include="PhysicsScene3D.h" />
     <ClInclude Include="Plane3D.h" />
