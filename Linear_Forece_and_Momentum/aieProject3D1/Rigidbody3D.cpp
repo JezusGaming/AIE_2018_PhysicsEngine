@@ -2,18 +2,18 @@
 const static float MIN_LINEAR_THRESHOLD;
 const static float MIN_ROTATION_THRESHOLD;
 
-Rigidbody3D::Rigidbody3D(ShapeType shapeID, glm::vec3 position, glm::vec3 velocity, float rotation, float mass) : PhysicsObject3D(shapeID)
+Rigidbody3D::Rigidbody3D(ShapeType shapeID, glm::vec3 position, glm::vec3 velocity, float roation, float mass) : PhysicsObject3D(shapeID)
 {
 	m_postition = position;
 	m_velocity = velocity;
-	m_rotation = rotation;
+	m_Rotation = roation;
+	m_rotation = glm::mat4(1);
 	m_mass = mass;
 	m_linearDrag = 1.0f;
 	m_angularDrag = 1.0f;
 	m_elasticity = 0.8f;
-	m_angularVelocity = 0.1f;
+	m_angularVelocity = glm::vec3(0.1f);
 }
-
 
 Rigidbody3D::~Rigidbody3D()
 {
@@ -21,6 +21,13 @@ Rigidbody3D::~Rigidbody3D()
 
 void Rigidbody3D::fixedUpdate(glm::vec3 gravity, float timeStep)
 {
+	glm::quat xRotation = glm::angleAxis(m_angularVelocity.x * timeStep, glm::vec3(1, 0, 0));
+	glm::quat yRotation = glm::angleAxis(m_angularVelocity.y * timeStep, glm::vec3(0, 1, 0));
+	glm::quat zRotation = glm::angleAxis(m_angularVelocity.z * timeStep, glm::vec3(0, 0, 1));
+
+	glm::quat rotation = xRotation * yRotation * zRotation;
+
+	m_rotation = glm::mat4_cast(rotation) * m_rotation;
 	//applyForce(gravity * m_mass * timeStep);
 	m_velocity += gravity * timeStep;
 	m_postition += m_velocity * timeStep;
@@ -30,9 +37,9 @@ void Rigidbody3D::fixedUpdate(glm::vec3 gravity, float timeStep)
 	{
 		m_velocity = glm::vec3(0, 0, 0);
 	}
-	if (glm::abs(m_angularVelocity) < MIN_ROTATION_THRESHOLD)
+	if (glm::length(m_angularVelocity) < MIN_ROTATION_THRESHOLD)
 	{
-		m_angularVelocity = 0;
+		m_angularVelocity = glm::vec3(0,0,0);
 	}
 }
 
@@ -74,9 +81,9 @@ void Rigidbody3D::resolveCollision(Rigidbody3D * actor2, glm::vec3 contact, glm:
 	float r1 = glm::dot(contact - m_postition, -perp);
 	float r2 = glm::dot(contact - actor2->m_postition, perp);
 	// velocity of the contact point on this object
-	float v1 = glm::dot(m_velocity, normal) - r1 * m_angularVelocity;
+	float v1 = glm::dot(m_velocity, normal) - r1 * m_angularVelocity.x;
 	// velocity of contact point on actor2
-	float v2 = glm::dot(actor2->m_velocity, normal) + r2 * actor2->m_angularVelocity;
+	float v2 = glm::dot(actor2->m_velocity, normal) + r2 * actor2->m_angularVelocity.x;
 
 	if (v1 > v2) // they're moving closer
 	{

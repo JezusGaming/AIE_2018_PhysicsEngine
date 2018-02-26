@@ -21,6 +21,10 @@ void Plane3D::fixedUpdate(glm::vec3 gravity, float timeStep)
 
 void Plane3D::makeGizmo()
 {
+	/*glm::mat4 rotation = glm::lookAt(glm::vec3(0), m_normal, glm::vec3(0, 0, 1));
+	rotation[3] = glm::vec4(m_normal * m_distanceToOrigin, 1);
+	aie::Gizmos::addDisk(glm::vec3(0), 5, 16, glm::vec4(1, 1, 0, 0.5), &rotation);*/
+
 	float lineSegmentLength = 1;
 	glm::vec3 parallel(m_normal.y, -m_normal.x , m_normal.z);
 	glm::vec3 centerPoint = m_normal * m_distanceToOrigin;

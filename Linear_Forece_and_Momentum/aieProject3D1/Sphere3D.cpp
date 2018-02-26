@@ -19,7 +19,5 @@ Sphere3D::~Sphere3D()
 
 void Sphere3D::makeGizmo()
 {
-	glm::vec3 end = glm::vec3(cos(m_rotation), sin(m_rotation), tan(m_rotation)) * m_radius;
 	aie::Gizmos::addSphere(m_postition, m_radius, 12, 12, m_colour);
-	aie::Gizmos::addLine(m_postition, m_postition + end, glm::vec4(1, 1, 1, 1));
 }

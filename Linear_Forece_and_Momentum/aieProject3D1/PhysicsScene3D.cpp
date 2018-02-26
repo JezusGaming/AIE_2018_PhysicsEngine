@@ -199,6 +199,30 @@ bool PhysicsScene3D::AABB2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 
 bool PhysicsScene3D::Box2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
+	BoxOOB* box1 = dynamic_cast<BoxOOB*>(obj1);
+	BoxOOB* box2 = dynamic_cast<BoxOOB*>(obj2);
+
+	if (box1 != nullptr && box2 != nullptr) {
+		glm::vec3 boxPos = box2->getPostition() - box1->getPostition();
+
+		glm::vec3 norm(0, 0, 0);
+		glm::vec3 contact(0, 0, 0);
+		float pen = 0;
+		int numContacts = 0;
+
+		box1->checkBoxCorners(*box2, contact, numContacts, pen, norm);
+
+		if (box2->checkBoxCorners(*box1, contact, numContacts, pen, norm))
+		{
+			norm = -norm;
+		}
+
+		if (pen > 0)
+		{
+			box1->resolveCollision(box2, contact / float(numContacts), &norm);
+		}
+		return true;
+	}
 	return false;
 }
 
@@ -209,7 +233,112 @@ bool PhysicsScene3D::Box2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 
 	if (box != nullptr && sphere != nullptr)
 	{
+		glm::vec3 circlePos = sphere->getPostition() - box->getPostition();
+		float w3 = box->getWidth() / 2, h3 = box->getHight() / 2, d3 = box->getDepth() / 2;
 
+		int numContacts = 0;
+		glm::vec3 contact(0, 0, 0); // contact is in our box coordinates
+
+		// check the four corners to see if any of them are inside the circle
+		for (float x = -w3; x <= w3; x += box->getWidth()) {
+			for (float y = -h3; y <= h3; y += box->getHight()) {
+				for (float z = -d3; z <= d3; z += box->getDepth()) {
+					glm::vec3 p = x * box->getLocalX() + y * box->getLocalY() + z * box->getLocalZ();
+					glm::vec3 dp = p - circlePos;
+					if (dp.x*dp.x + dp.y*dp.y + dp.z*dp.z < sphere->getRadius()*sphere->getRadius())
+					{
+						numContacts++;
+						contact += glm::vec3(x, y, z);
+					}
+				}
+			}
+		}
+		glm::vec3* direction = nullptr;
+		// get the local position of the circle centre
+		glm::vec3 localPos(glm::dot(box->getLocalX(), circlePos),
+			glm::dot(box->getLocalY(), circlePos),
+			glm::dot(box->getLocalZ(), circlePos));
+		if (localPos.y < h3 && localPos.y > -h3) {
+			if (localPos.x > 0 && localPos.x < w3 + sphere->getRadius()) {
+				numContacts++;
+				contact += glm::vec3(w3, localPos.y, localPos.z);
+				direction = new glm::vec3(box->getLocalX());
+			}
+			if (localPos.x < 0 && localPos.x > -(w3 + sphere->getRadius())) {
+				numContacts++;
+				contact += glm::vec3(-w3, localPos.y, localPos.z);
+				direction = new glm::vec3(-box->getLocalX());
+			}
+			if (localPos.z > 0 && localPos.z < w3 + sphere->getRadius()) {
+				numContacts++;
+				contact += glm::vec3(w3, localPos.y, localPos.z);
+				direction = new glm::vec3(box->getLocalX());
+			}
+			if (localPos.z < 0 && localPos.z > -(w3 + sphere->getRadius())) {
+				numContacts++;
+				contact += glm::vec3(-w3, localPos.y, localPos.z);
+				direction = new glm::vec3(-box->getLocalX());
+			}
+		}
+		if (localPos.x < w3 && localPos.x > -w3) {
+			if (localPos.y > 0 && localPos.y < h3 + sphere->getRadius())
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, h3, localPos.z);
+				direction = new glm::vec3(box->getLocalY());
+			}
+			if (localPos.y < 0 && localPos.y > -(h3 + sphere->getRadius()))
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, -h3, localPos.z);
+				direction = new glm::vec3(-box->getLocalY());
+			}
+			if (localPos.z > 0 && localPos.z < h3 + sphere->getRadius())
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, h3, localPos.z);
+				direction = new glm::vec3(box->getLocalY());
+			}
+			if (localPos.z < 0 && localPos.z > -(h3 + sphere->getRadius()))
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, -h3, localPos.z);
+				direction = new glm::vec3(-box->getLocalY());
+			}
+		}
+		if (localPos.z < d3 && localPos.z > -d3) {
+			if (localPos.x > 0 && localPos.x < d3 + sphere->getRadius())
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, localPos.y, d3);
+				direction = new glm::vec3(box->getLocalZ());
+			}
+			if (localPos.x < 0 && localPos.x > -(d3 + sphere->getRadius()))
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, localPos.y, -d3);
+				direction = new glm::vec3(-box->getLocalY());
+			}
+			if (localPos.y > 0 && localPos.y < d3 + sphere->getRadius())
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, localPos.y, d3);
+				direction = new glm::vec3(box->getLocalZ());
+			}
+			if (localPos.y < 0 && localPos.y > -(d3 + sphere->getRadius()))
+			{
+				numContacts++;
+				contact += glm::vec3(localPos.x, localPos.y, -d3);
+				direction = new glm::vec3(-box->getLocalY());
+			}
+		}
+		if (numContacts > 0)
+		{
+			// average, and convert back into world coords
+			contact = box->getPostition() + (1.0f / numContacts) * (box->getLocalX() * contact.x + box->getLocalY() * contact.y + box->getLocalZ() * contact.z);
+			box->resolveCollision(sphere, contact, direction);
+		}
+		delete direction;
 	}
 	return false;
 }
@@ -244,7 +373,7 @@ bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 					float distFromPlane = glm::dot(p - planeOrigin, plane->getNormal());
 
 					// this is the total velocity of the point
-					float velocityIntoPlane = glm::dot(box->getVelocity() + box->getRotation() * (-y * box->getLocalX() + x * box->getLocalY() + z * box->getLocalZ()), plane->getNormal());
+					float velocityIntoPlane = glm::dot(box->getVelocity() + box->getrotation() * (-y * box->getLocalX() + x * box->getLocalY() + z * box->getLocalZ()), plane->getNormal());
 
 					// if this corner is on the opposite side from the COM,
 					// and moving further in, we need to resolve the collision
