@@ -25,9 +25,9 @@ PhysicsScene3D::~PhysicsScene3D()
 
 static fn collisionFunctionArray[] =
 {
-	PhysicsScene3D::plane2Plane, PhysicsScene3D::plane2Sphere, PhysicsScene3D::plane2AABB,
-	PhysicsScene3D::sphere2Plane, PhysicsScene3D::sphere2Sphere, PhysicsScene3D::sphere2AABB,
-	PhysicsScene3D::AABB2Plane, PhysicsScene3D::AABB2Sphere, PhysicsScene3D::AABB2AABB,
+	PhysicsScene3D::plane2Plane, PhysicsScene3D::plane2Sphere, PhysicsScene3D::plane2Box,
+	PhysicsScene3D::sphere2Plane, PhysicsScene3D::sphere2Sphere, PhysicsScene3D::sphere2Box,
+	/*PhysicsScene3D::AABB2Plane, PhysicsScene3D::AABB2Sphere, PhysicsScene3D::AABB2AABB,*/
 	PhysicsScene3D::Box2Box, PhysicsScene3D::Box2Sphere, PhysicsScene3D::Box2Plane
 };
 
@@ -67,10 +67,15 @@ bool PhysicsScene3D::plane2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	return sphere2Plane(obj2, obj1);
 }
 
-bool PhysicsScene3D::plane2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+bool PhysicsScene3D::plane2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
-	return AABB2Plane(obj2, obj1);
+	return Box2Plane(obj2, obj1);
 }
+
+//bool PhysicsScene3D::plane2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+//{
+//	return AABB2Plane(obj2, obj1);
+//}
 
 bool PhysicsScene3D::sphere2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
@@ -110,11 +115,17 @@ bool PhysicsScene3D::sphere2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	// if we are successful then test for collision
 	if (sphere1 != nullptr && sphere2 != nullptr)
 	{
-		glm::vec3 distance = sphere1->getPostition() - sphere2->getPostition();
-		float radiusTotal = sphere1->getRadius() + sphere2->getRadius();
+		glm::vec3 delta = sphere2->getPostition() - sphere1->getPostition();
+		float distance = glm::length(delta);
+		float intersection = sphere1->getRadius() + sphere2->getRadius() - distance;
 
-		if (glm::length(distance) <= radiusTotal)
+		if (intersection > 0)
 		{
+			glm::vec3 contactForce = 0.5f * (distance - (sphere1->getRadius() + sphere2->getRadius())) * delta / distance;
+
+			sphere1->setPosition(sphere1->getPostition() + contactForce);
+			sphere2->setPosition(sphere2->getPostition() - contactForce);
+
 			sphere1->resolveCollision(sphere2, 0.05f * (sphere1->getPostition() + sphere2->getPostition()));
 			//sphere1->setVelocity(glm::vec2(0, 0));
 			//sphere2->setVelocity(glm::vec2(0, 0));
@@ -124,78 +135,83 @@ bool PhysicsScene3D::sphere2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	return false;
 }
 
-bool PhysicsScene3D::sphere2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+bool PhysicsScene3D::sphere2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
-	Sphere3D *sphere1 = dynamic_cast<Sphere3D*>(obj1);
-	Box3D *box1 = dynamic_cast<Box3D*>(obj2);
-
-	if (box1 != nullptr && sphere1 != nullptr)
-	{
-		glm::vec3 A = glm::clamp(sphere1->getPostition(), box1->getMin(), box1->getMax());
-		glm::vec3 V = A - sphere1->getPostition();
-
-		if (glm::length(V) <= sphere1->getRadius())
-		{
-			//sphere1->resolveCollision(box1);
-		}
-	}
-	return false;
+	return Box2Sphere(obj2, obj1);
 }
 
-bool PhysicsScene3D::AABB2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
-{
-	Box3D *box = dynamic_cast<Box3D*>(obj1);
-	Plane3D *plane = dynamic_cast<Plane3D*>(obj2);
+//bool PhysicsScene3D::sphere2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+//{
+//	Sphere3D *sphere1 = dynamic_cast<Sphere3D*>(obj1);
+//	Box3D *box1 = dynamic_cast<Box3D*>(obj2);
+//
+//	if (box1 != nullptr && sphere1 != nullptr)
+//	{
+//		glm::vec3 A = glm::clamp(sphere1->getPostition(), box1->getMin(), box1->getMax());
+//		glm::vec3 V = A - sphere1->getPostition();
+//
+//		if (glm::length(V) <= sphere1->getRadius())
+//		{
+//			//sphere1->resolveCollision(box1);
+//		}
+//	}
+//	return false;
+//}
 
-	if (box != nullptr && plane != nullptr)
-	{
-		glm::vec3 v = plane->getNormal();
-		glm::vec3 bottomLeft = box->getMin();
-		glm::vec3 bottomRight = box->getMin() + glm::vec3(box->getWidth(), 0, 0);
-		glm::vec3 topLeft = box->getMin() + glm::vec3(0, box->getHight() , 0);
-		glm::vec3 topRight = box->getMax() + glm::vec3(box->getWidth(), box->getHight(), box->getDepth());
+//bool PhysicsScene3D::AABB2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+//{
+//	Box3D *box = dynamic_cast<Box3D*>(obj1);
+//	Plane3D *plane = dynamic_cast<Plane3D*>(obj2);
+//
+//	if (box != nullptr && plane != nullptr)
+//	{
+//		glm::vec3 v = plane->getNormal();
+//		glm::vec3 bottomLeft = box->getMin();
+//		glm::vec3 bottomRight = box->getMin() + glm::vec3(box->getWidth(), 0, 0);
+//		glm::vec3 topLeft = box->getMin() + glm::vec3(0, box->getHight() , 0);
+//		glm::vec3 topRight = box->getMax() + glm::vec3(box->getWidth(), box->getHight(), box->getDepth());
+//
+//		if (glm::dot(v, bottomLeft) - plane->getDistance() < 0 ||
+//			glm::dot(v, bottomRight) - plane->getDistance() < 0 ||
+//			glm::dot(v, topLeft) - plane->getDistance() < 0 ||
+//			glm::dot(v, topLeft) - plane->getDistance() < 0)
+//		{
+//			//plane->resolveCollision(box);
+//			return true;
+//		}
+//	}
+//
+//	return false;
+//}
 
-		if (glm::dot(v, bottomLeft) - plane->getDistance() < 0 ||
-			glm::dot(v, bottomRight) - plane->getDistance() < 0 ||
-			glm::dot(v, topLeft) - plane->getDistance() < 0 ||
-			glm::dot(v, topLeft) - plane->getDistance() < 0)
-		{
-			//plane->resolveCollision(box);
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool PhysicsScene3D::AABB2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
-{
-	return sphere2AABB(obj2, obj1);
-}
-
-bool PhysicsScene3D::AABB2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
-{
-	Box3D *box1 = dynamic_cast<Box3D*>(obj1);
-	Box3D *box2 = dynamic_cast<Box3D*>(obj2);
-
-	if (box1 != nullptr && box2 != nullptr)
-	{
-		glm::vec3 max1 = box1->getMax();
-		glm::vec3 min1 = box1->getMin();
-		glm::vec3 max2 = box2->getMax();
-		glm::vec3 min2 = box2->getMin();
-
-		if (min1.x <= max2.x &&
-			min1.y <= max2.y &&
-			max1.x >= min2.x &&
-			max1.y >= min2.y)
-		{
-			//box1->resolveCollision(box2);
-			return true;
-		}
-	}
-	return false;
-}
+//bool PhysicsScene3D::AABB2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+//{
+//	return sphere2AABB(obj2, obj1);
+//}
+//
+//bool PhysicsScene3D::AABB2AABB(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
+//{
+//	Box3D *box1 = dynamic_cast<Box3D*>(obj1);
+//	Box3D *box2 = dynamic_cast<Box3D*>(obj2);
+//
+//	if (box1 != nullptr && box2 != nullptr)
+//	{
+//		glm::vec3 max1 = box1->getMax();
+//		glm::vec3 min1 = box1->getMin();
+//		glm::vec3 max2 = box2->getMax();
+//		glm::vec3 min2 = box2->getMin();
+//
+//		if (min1.x <= max2.x &&
+//			min1.y <= max2.y &&
+//			max1.x >= min2.x &&
+//			max1.y >= min2.y)
+//		{
+//			//box1->resolveCollision(box2);
+//			return true;
+//		}
+//	}
+//	return false;
+//}
 
 bool PhysicsScene3D::Box2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
@@ -206,22 +222,25 @@ bool PhysicsScene3D::Box2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 		glm::vec3 boxPos = box2->getPostition() - box1->getPostition();
 
 		glm::vec3 norm(0, 0, 0);
+		glm::vec3 contactForce1, contactForce2;
 		glm::vec3 contact(0, 0, 0);
 		float pen = 0;
 		int numContacts = 0;
 
-		box1->checkBoxCorners(*box2, contact, numContacts, pen, norm);
+		box1->checkBoxCorners(*box2, contact, numContacts, norm, contactForce1);
 
-		if (box2->checkBoxCorners(*box1, contact, numContacts, pen, norm))
+		if (box2->checkBoxCorners(*box1, contact, numContacts, norm, contactForce2))
 		{
 			norm = -norm;
 		}
-
-		if (pen > 0)
+		if (numContacts > 0)
 		{
+			glm::vec3 contactForce = 0.5f*(contactForce1 - contactForce2);
+			box1->setPosition(box1->getPostition() - contactForce);
+			box2->setPosition(box2->getPostition() + contactForce);
 			box1->resolveCollision(box2, contact / float(numContacts), &norm);
+			return true;
 		}
-		return true;
 	}
 	return false;
 }
@@ -355,6 +374,7 @@ bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 		glm::vec3 contact(0, 0, 0);
 		float contactV = 0;
 		float radius = 0.5f * fminf(box->getWidth(), box->getHight());
+		float penetration = 0;
 
 		// which side is the centre of mass on?
 		glm::vec3 planeOrigin = plane->getNormal() * plane->getDistance();
@@ -383,6 +403,15 @@ bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 						numContacts++;
 						contact += p;
 						contactV += velocityIntoPlane;
+						if (comFromPlane >= 0)
+						{
+							if (penetration > distFromPlane)
+								penetration = distFromPlane;
+						}
+						else {
+							if (penetration < distFromPlane)
+								penetration = distFromPlane;
+						}
 					}
 				}
 			}
@@ -410,6 +439,8 @@ bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 			float mass0 = 1.0f / (1.0f / box->getMass() + (r*r) / box->getMoment());
 			// and apply the force
 			box->applyForce(acceleration * mass0, localContact);
+
+			box->setPosition(box->getPostition() - plane->getNormal() * penetration);
 		}
 	}
 	return false;

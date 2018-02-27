@@ -27,13 +27,15 @@ public:
 
 	static bool plane2Plane(PhysicsObject3D*, PhysicsObject3D*);
 	static bool plane2Sphere(PhysicsObject3D*, PhysicsObject3D*);
-	static bool plane2AABB(PhysicsObject3D*, PhysicsObject3D*);
+	static bool plane2Box(PhysicsObject3D*, PhysicsObject3D*);
+	//static bool plane2AABB(PhysicsObject3D*, PhysicsObject3D*);
 	static bool sphere2Plane(PhysicsObject3D*, PhysicsObject3D*);
 	static bool sphere2Sphere(PhysicsObject3D*, PhysicsObject3D*);
-	static bool sphere2AABB(PhysicsObject3D*, PhysicsObject3D*);
-	static bool AABB2Plane(PhysicsObject3D*, PhysicsObject3D*);
+	static bool sphere2Box(PhysicsObject3D*, PhysicsObject3D*);
+	/*static bool sphere2AABB(PhysicsObject3D*, PhysicsObject3D*);*/
+	/*static bool AABB2Plane(PhysicsObject3D*, PhysicsObject3D*);
 	static bool AABB2Sphere(PhysicsObject3D*, PhysicsObject3D*);
-	static bool AABB2AABB(PhysicsObject3D*, PhysicsObject3D*);
+	static bool AABB2AABB(PhysicsObject3D*, PhysicsObject3D*);*/
 	static bool Box2Box(PhysicsObject3D*, PhysicsObject3D*);
 	static bool Box2Sphere(PhysicsObject3D*, PhysicsObject3D*);
 	static bool Box2Plane(PhysicsObject3D*, PhysicsObject3D*);

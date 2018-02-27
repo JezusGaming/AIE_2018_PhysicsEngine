@@ -21,6 +21,7 @@ public:
 	float getMass() { return m_mass; }
 	void setVelocity(glm::vec3 vel) { m_velocity = vel; }
 	float getElasticity() { return m_elasticity; }
+	void setPosition(glm::vec3 pos) { m_postition = pos; }
 	void resolveCollision(Rigidbody3D* actor2, glm::vec3 contact, glm::vec3*collisionormal=nullptr);
 
 protected:

@@ -21,3 +21,4 @@ void Sphere3D::makeGizmo()
 {
 	aie::Gizmos::addSphere(m_postition, m_radius, 12, 12, m_colour);
 }
+

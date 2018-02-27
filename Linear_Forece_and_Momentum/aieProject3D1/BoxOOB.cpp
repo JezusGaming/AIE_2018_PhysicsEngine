@@ -46,14 +46,13 @@ void BoxOOB::makeGizmo()
 	aie::Gizmos::addTri(p1, p4, p3, m_colour);
 }
 
-bool BoxOOB::checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, float &pen, glm::vec3& edgeNormal)
+bool BoxOOB::checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, glm::vec3& edgeNormal, glm::vec3& contactForce)
 {
 	float minX, maxX, minY, maxY, minZ, maxZ;
 	float boxW = box.getDimensions().x * 2;
 	float boxH = box.getDimensions().y * 2;
 	float boxZ = box.getDimensions().z * 2;
-	int numLocalContact = 0;
-	glm::vec3 localContact(0, 0, 0);
+	float penetration = 0;
 
 	bool first = true;
 	for (float x = -box.getDimensions().x; x < boxW; x += boxW)
@@ -67,24 +66,115 @@ bool BoxOOB::checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, 
 				// position in our box's space
 				glm::vec3 p0(glm::dot(p - m_postition, m_localX), glm::dot(p - m_postition, m_localY), glm::dot(p - m_postition, m_localZ));
 
-				if (first || p0.x < minX) minX = p0.x;
-				if (first || p0.x > maxX) maxX = p0.x;
-				if (first || p0.y < minY) minY = p0.y;
-				if (first || p0.y > maxY) maxY = p0.y;
-				if (first || p0.z < minZ) minZ = p0.z;
-				if (first || p0.z > maxZ) maxZ = p0.z;
-
-				if (p0.x >= -m_extents.x && p0.x <= m_extents.x &&
-					p0.y >= -m_extents.y && p0.y <= m_extents.y &&
-					p0.z >= -m_extents.z && p0.z <= m_extents.z)
+				float w3 = m_extents.x, h3 = m_extents.y, z3 = m_extents.z;
+				if (p0.y < h3 && p0.y > -h3)
 				{
-					numLocalContact++;
-					localContact += p0;
+					if (p0.x > 0 && p0.x < w3)
+					{
+						numContacts++;
+						contact += m_postition + w3 * m_localX + p0.y * m_localY + p0.z * m_localZ;
+						edgeNormal = m_localX; 
+						penetration = w3 - p0.x;
+					}
+					if (p0.x < 0 && p0.x > -w3)
+					{
+						numContacts++;
+						contact += m_postition - w3 * m_localX + p0.y * m_localY + p0.z * m_localZ;
+						edgeNormal = -m_localX;
+						penetration = w3 - p0.x;
+					}
+					if (p0.z > 0 && p0.z < z3)
+					{
+						numContacts++;
+						contact += m_postition + w3 * m_localX + p0.y * m_localY + p0.z * m_localZ;
+						edgeNormal = m_localX;
+						penetration = z3 - p0.z;
+					}
+					if (p0.z < 0 && p0.z > -z3)
+					{
+						numContacts++;
+						contact += m_postition + w3 * m_localX + p0.y * m_localY - p0.z * m_localZ;
+						edgeNormal = -m_localZ;
+						penetration = z3 - p0.z;
+					}
 				}
-				first = false;
+				if (p0.x < w3 && p0.x > -w3)
+				{
+					if (p0.y > 0 && p0.y < h3)
+					{
+						numContacts++;
+						contact += m_postition + p0.x * m_localX + h3 * m_localY + p0.z * m_localZ;
+						float pen0 = h3 - p0.y;
+						if (pen0 < penetration || penetration == 0) {
+							penetration = pen0;
+							edgeNormal = m_localY;
+						}
+					}
+					if (p0.y < 0 && p0.y > -h3)
+					{
+						numContacts++;
+						contact += m_postition + p0.x * m_localX - h3 * m_localY + p0.z * m_localZ;
+						float pen0 = h3 + p0.y;
+						if (pen0 < penetration || penetration == 0) {
+							penetration = pen0;
+							edgeNormal = -m_localY;
+						}
+					}
+					if (p0.z > 0 && p0.z < z3)
+					{
+						numContacts++;
+						contact += m_postition + p0.x * m_localX + h3 * m_localY + p0.z * m_localZ;
+						edgeNormal = m_localZ;
+						penetration = z3 - p0.z;
+					}
+					if (p0.z < 0 && p0.z > -z3)
+					{
+						numContacts++;
+						contact += m_postition - p0.x * m_localX + h3 * m_localY - p0.z * m_localZ;
+						edgeNormal = -m_localZ;
+						penetration = z3 - p0.z;
+					}
+				}
+				if (p0.z < z3 && p0.z > -z3)
+				{
+					if (p0.x > 0 && p0.x < w3)
+					{
+						numContacts++;
+						contact += m_postition + p0.x * m_localX + p0.y * m_localY + z3 * m_localZ;
+						edgeNormal = m_localX;
+						penetration = w3 - p0.x;
+					}
+					if (p0.x < 0 && p0.x > -w3)
+					{
+						numContacts++;
+						contact += m_postition - p0.x * m_localX + p0.y * m_localY + z3 * m_localZ;
+						edgeNormal = -m_localX;
+						penetration = w3 - p0.x;
+					}
+					if (p0.y > 0 && p0.y < h3)
+					{
+						numContacts++;
+						contact += m_postition + p0.x * m_localX + p0.y * m_localY + z3 * m_localZ;
+						float pen0 = h3 - p0.y;
+						if (pen0 < penetration || penetration == 0) {
+							penetration = pen0;
+							edgeNormal = m_localY;
+						}
+					}
+					if (p0.y < 0 && p0.y > -h3)
+					{
+						numContacts++;
+						contact += m_postition + p0.x * m_localX - p0.y * m_localY + z3 * m_localZ;
+						float pen0 = h3 + p0.y;
+						if (pen0 < penetration || penetration == 0) {
+							penetration = pen0;
+							edgeNormal = -m_localY;
+						}
+					}
+				}
 			}
 		}
-		if (maxX <-m_extents.x || minX >m_extents.x ||
+		/*if (maxX <-m_extents.x || minX >m_extents.x ||
 			maxY<-m_extents.y || minY >m_extents.y ||
 			maxZ<-m_extents.z || minZ >m_extents.z)
 			return false;
@@ -138,8 +228,9 @@ bool BoxOOB::checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, 
 			pen = pen0;
 			res = true;
 		}
-		return res;
+		return res;*/
 
 	}
-	return false;
+	contact = penetration * edgeNormal;
+	return (penetration != 0);
 }

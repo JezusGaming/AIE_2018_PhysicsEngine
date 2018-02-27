@@ -8,7 +8,7 @@ public:
 
 	void fixedUpdate(glm::vec3 gravity, float timeStep);
 	void makeGizmo();
-	bool checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, float &pen, glm::vec3& edgeNormal);
+	bool checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, glm::vec3& edgeNormal, glm::vec3& contactForce);
 
 	float getWidth() { return m_width; }
 	float getHight() { return m_hight; }

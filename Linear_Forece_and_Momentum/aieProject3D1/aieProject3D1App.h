@@ -6,6 +6,7 @@
 #include "Sphere3D.h"
 #include "Plane3D.h"
 #include "Box3D.h"
+#include "BoxOOB.h"
 
 class aieProject3D1App : public aie::Application {
 public:

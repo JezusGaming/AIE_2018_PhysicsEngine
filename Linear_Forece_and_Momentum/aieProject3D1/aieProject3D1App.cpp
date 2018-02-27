@@ -25,7 +25,7 @@ bool aieProject3D1App::startup() {
 	Gizmos::create(10000, 10000, 10000, 10000);
 
 	// create simple camera transforms
-	m_viewMatrix = glm::lookAt(vec3(20), vec3(0), vec3(0, 1, 0));
+	m_viewMatrix = glm::lookAt(vec3(30), vec3(0), vec3(0, 1, 0));
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f, 16.0f / 9.0f, 0.1f, 1000.0f);
 
 	m_physicsScene = new PhysicsScene3D();
@@ -41,15 +41,15 @@ bool aieProject3D1App::startup() {
 	m_physicsScene->addActor(sphere);
 	m_physicsScene->addActor(sphere1);
 
-	//Box3D* box;
-	//Box3D* box1;
-	//box = new Box3D(glm::vec3(-5, 10, 0), glm::vec3(10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(1, 0, 0, 1));
-	//box1 = new Box3D(glm::vec3(5, 10, 0), glm::vec3(-10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(0, 1, 0, 1));
+	BoxOOB* box;
+	BoxOOB* box1;
+	box = new BoxOOB(glm::vec3(-5, 10, 0), glm::vec3(10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(1, 0, 0, 1));
+	box1 = new BoxOOB(glm::vec3(5, 10, 5), glm::vec3(-10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(0, 1, 0, 1));
 	//box->applyForce(glm::vec3(10, 0, 0));
 	//box1->applyForce(glm::vec3(-10, 0, 0));
-	//m_physicsScene->addActor(box);
-	//m_physicsScene->addActor(box1);
-	// TODO
+	m_physicsScene->addActor(box);
+	m_physicsScene->addActor(box1);
+	
 	Plane3D* plane;
 	plane = new Plane3D(glm::normalize(glm::vec3(0, 1, 0)), 0);
 	m_physicsScene->addActor(plane);
