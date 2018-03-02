@@ -7,8 +7,8 @@ BoxOOB::BoxOOB(glm::vec3 position, glm::vec3 velocity, float mass, float width, 
 	m_width = width;
 	m_hight = hight;
 	m_depth = depth;
-	m_dimensions = glm::vec3(m_width, m_hight, m_depth);
-	//m_extents = glm::vec3(m_width, m_hight, m_depth);
+	//m_dimensions = glm::vec3(m_width, m_hight, m_depth);
+	m_extents = glm::vec3(m_width, m_hight, m_depth);
 	m_colour = colour;
 	m_moment = 1.0f / 12.0f * mass * width * hight;
 }
@@ -42,24 +42,30 @@ void BoxOOB::makeGizmo()
 	glm::vec3 p2 = m_postition + m_localX * m_extents.x - m_localY * m_extents.y - m_localZ * m_extents.z;
 	glm::vec3 p3 = m_postition - m_localX * m_extents.x + m_localY * m_extents.y + m_localZ * m_extents.z;
 	glm::vec3 p4 = m_postition + m_localX * m_extents.x + m_localY * m_extents.y + m_localZ * m_extents.z;
-	aie::Gizmos::addTri(p1, p2, p4, m_colour);
-	aie::Gizmos::addTri(p1, p4, p3, m_colour);
+	//aie::Gizmos::addTri(p1, p2, p4, m_colour);
+	//aie::Gizmos::addTri(p1, p4, p3, m_colour);
+
+	glm::mat4 transform = glm::mat4(1);
+		transform[0] = glm::vec4(m_localX, 0);
+		transform[1] = glm::vec4(m_localY, 0);
+		transform[2] = glm::vec4(m_localZ, 0);
+	aie::Gizmos::addAABBFilled(m_postition, m_extents, m_colour,&transform);
 }
 
 bool BoxOOB::checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, glm::vec3& edgeNormal, glm::vec3& contactForce)
 {
 	float minX, maxX, minY, maxY, minZ, maxZ;
-	float boxW = box.getDimensions().x * 2;
-	float boxH = box.getDimensions().y * 2;
-	float boxZ = box.getDimensions().z * 2;
+	float boxW = box.getExtents().x * 2;
+	float boxH = box.getExtents().y * 2;
+	float boxZ = box.getExtents().z * 2;
 	float penetration = 0;
 
 	bool first = true;
-	for (float x = -box.getDimensions().x; x < boxW; x += boxW)
+	for (float x = -box.getExtents().x; x < boxW; x += boxW)
 	{
-		for (float y = -box.getDimensions().y; y < boxH; y += boxH)
+		for (float y = -box.getExtents().y; y < boxH; y += boxH)
 		{
-			for (float z = -box.getDimensions().z; z < boxZ; z += boxZ)
+			for (float z = -box.getExtents().z; z < boxZ; z += boxZ)
 			{
 				// position in worldspace
 				glm::vec3 p = box.getPostition() + x * box.m_localX + y * box.m_localY + z * box.m_localZ;

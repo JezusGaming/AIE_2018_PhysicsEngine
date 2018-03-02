@@ -26,4 +26,6 @@ protected:
 	glm::mat4	m_viewMatrix;
 	glm::mat4	m_projectionMatrix;
 	PhysicsScene3D* m_physicsScene;
+
+	glm::vec4 m_clearColour;
 };

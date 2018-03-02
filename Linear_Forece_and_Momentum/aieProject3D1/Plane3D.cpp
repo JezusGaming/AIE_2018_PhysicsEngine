@@ -32,7 +32,7 @@ void Plane3D::makeGizmo()
 	glm::vec4 colour(1, 1, 1, 1);
 	glm::vec3 start = centerPoint + (parallel * lineSegmentLength);
 	glm::vec3 end = centerPoint - (parallel * lineSegmentLength);
-	aie::Gizmos::addAABBFilled(start, end, colour);
+	//aie::Gizmos::addAABBFilled(start, end, colour);
 }
 
 void Plane3D::resetPosition()

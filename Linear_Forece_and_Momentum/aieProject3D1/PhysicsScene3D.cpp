@@ -101,6 +101,9 @@ bool PhysicsScene3D::sphere2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 			glm::vec3 contact = sphere->getPostition() + (collisionNormal * -sphere->getRadius());
 			plane->resolveCollision(sphere, contact);
 			//sphere->setVelocity(glm::vec2(0, 0));
+
+			sphere->setPosition(contact + collisionNormal * sphere->getRadius() + intersection);
+
 			return true;
 		}
 	}
@@ -381,11 +384,11 @@ bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 		float comFromPlane = glm::dot(box->getPostition() - planeOrigin, plane->getNormal());
 
 		// check all four corners to see if we've hit the plane
-		for (float x = -box->getDimensions().x; x < box->getWidth(); x += box->getWidth())
+		for (float x = -box->getExtents().x; x < box->getWidth(); x += box->getWidth())
 		{
-			for (float y = -box->getDimensions().y; y < box->getHight(); y += box->getHight())
+			for (float y = -box->getExtents().y; y < box->getHight(); y += box->getHight())
 			{
-				for (float z = -box->getDimensions().z; z < box->getDepth(); z += box->getDepth())
+				for (float z = -box->getExtents().z; z < box->getDepth(); z += box->getDepth())
 				{
 					// get the position of the corner in world space
 					glm::vec3 p = box->getPostition() + x * box->getLocalX() + y * box->getLocalY() + z * box->getLocalZ();
