@@ -3,14 +3,18 @@
 #include <glm/ext.hpp>
 
 
-
+//----------------------------------------------------------------------------------------------
+// constructer initializes values
+//----------------------------------------------------------------------------------------------
 Plane3D::Plane3D(glm::vec3 normal, float distance) : PhysicsObject3D(ShapeType::PLANE)
 {
 	m_distanceToOrigin = distance;
 	m_normal = normal;
 }
 
-
+//----------------------------------------------------------------------------------------------
+// defualt destructor
+//----------------------------------------------------------------------------------------------
 Plane3D::~Plane3D()
 {
 }
@@ -18,7 +22,9 @@ Plane3D::~Plane3D()
 void Plane3D::fixedUpdate(glm::vec3 gravity, float timeStep)
 {
 }
-
+//----------------------------------------------------------------------------------------------
+// Makes a plane and draws it, work in progress 
+//----------------------------------------------------------------------------------------------
 void Plane3D::makeGizmo()
 {
 	/*glm::mat4 rotation = glm::lookAt(glm::vec3(0), m_normal, glm::vec3(0, 0, 1));
@@ -32,13 +38,18 @@ void Plane3D::makeGizmo()
 	glm::vec4 colour(1, 1, 1, 1);
 	glm::vec3 start = centerPoint + (parallel * lineSegmentLength);
 	glm::vec3 end = centerPoint - (parallel * lineSegmentLength);
-	//aie::Gizmos::addAABBFilled(start, end, colour);
 }
 
 void Plane3D::resetPosition()
 {
 }
-
+//----------------------------------------------------------------------------------------------
+// Resolves the collision of a plane and other shapes
+//
+// Param:
+//		actor: A Rigidbody pointer to ther other shape
+//		contact: A vec3 of the contact point of the collision
+//----------------------------------------------------------------------------------------------
 void Plane3D::resolveCollision(Rigidbody3D* actor2, glm::vec3 contact)
 {
 	// the plane isn't moving, so the relative velocity is just actor2's velocity

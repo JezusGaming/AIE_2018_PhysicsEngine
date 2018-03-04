@@ -9,17 +9,21 @@
 #include "Box3D.h"
 #include "BoxOOB.h"
 typedef bool(*fn)(PhysicsObject3D*, PhysicsObject3D*);
-
+//----------------------------------------------------------------------------------------------
+//default constructer
+//----------------------------------------------------------------------------------------------
 PhysicsScene3D::PhysicsScene3D() : m_timeStep(0.01f), m_gravity(glm::vec3(0, 0, 0))
 {
 
 }
-
+//----------------------------------------------------------------------------------------------
+// defualt destructor
+//----------------------------------------------------------------------------------------------
 PhysicsScene3D::~PhysicsScene3D()
 {
 	for (auto pActor : m_actors)
 	{
-		pActor;
+		delete pActor;
 	}
 }
 
@@ -30,7 +34,10 @@ static fn collisionFunctionArray[] =
 	/*PhysicsScene3D::AABB2Plane, PhysicsScene3D::AABB2Sphere, PhysicsScene3D::AABB2AABB,*/
 	PhysicsScene3D::Box2Box, PhysicsScene3D::Box2Sphere, PhysicsScene3D::Box2Plane
 };
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision iterats through shapes calls a funtionptr which calls one of the many 
+// collision functions based on the shapes
+//----------------------------------------------------------------------------------------------
 void PhysicsScene3D::checkForCollision()
 {
 	int actorCount = m_actors.size();
@@ -56,17 +63,41 @@ void PhysicsScene3D::checkForCollision()
 		}
 	}
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between two planes
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns false because we will not need to check is two planes collide
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::plane2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	return false;
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between plane2Sphere
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns sphere2Plane which resolves the collision if there is any
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::plane2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	return sphere2Plane(obj2, obj1);
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between plane2Box
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns box2Plane which resolves the collision if there is any
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::plane2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	return Box2Plane(obj2, obj1);
@@ -77,6 +108,16 @@ bool PhysicsScene3D::plane2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 //	return AABB2Plane(obj2, obj1);
 //}
 
+//----------------------------------------------------------------------------------------------
+// Checks for collision between sphere2Plane
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns true if there is a collision but resolves it before returning true, if there is
+//		no collision then returns false
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::sphere2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	Sphere3D *sphere = dynamic_cast<Sphere3D*>(obj1);
@@ -109,7 +150,16 @@ bool PhysicsScene3D::sphere2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	}
 	return false;
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between sphere2Sphere
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns true if there is a collision but resolves it before returning true, if there is
+//		no collision then returns false
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::sphere2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	// try to case objects to sphere and sphere
@@ -137,7 +187,15 @@ bool PhysicsScene3D::sphere2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	}
 	return false;
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between sphere2Box
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns box2Sphere which resolves the collision if there is any
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::sphere2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	return Box2Sphere(obj2, obj1);
@@ -216,10 +274,20 @@ bool PhysicsScene3D::sphere2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 //	return false;
 //}
 
+//----------------------------------------------------------------------------------------------
+// Checks for collision between Box2Box
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns true if there is a collision but resolves it before returning true, if there is
+//		no collision then returns false
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::Box2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
-	BoxOOB* box1 = dynamic_cast<BoxOOB*>(obj1);
-	BoxOOB* box2 = dynamic_cast<BoxOOB*>(obj2);
+	BoxOOB *box1 = dynamic_cast<BoxOOB*>(obj1);
+	BoxOOB *box2 = dynamic_cast<BoxOOB*>(obj2);
 
 	if (box1 != nullptr && box2 != nullptr) {
 		glm::vec3 boxPos = box2->getPostition() - box1->getPostition();
@@ -247,7 +315,16 @@ bool PhysicsScene3D::Box2Box(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	}
 	return false;
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between Box2Box
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns true if there is a collision but resolves it before returning true, if there is
+//		no collision then returns false
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::Box2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	BoxOOB* box = dynamic_cast<BoxOOB*>(obj1);
@@ -364,7 +441,16 @@ bool PhysicsScene3D::Box2Sphere(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	}
 	return false;
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks for collision between Box2Box
+//
+// Param:
+//		obj1: A physicsObject pointer used to help resolve the collision
+//		obj2: Another physicsObject pointer used to help resolve the collision
+// Return:
+//		Returns true if there is a collision but resolves it before returning true, if there is
+//		no collision then returns false
+//----------------------------------------------------------------------------------------------
 bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 {
 	BoxOOB *box = dynamic_cast<BoxOOB*>(obj1);
@@ -448,19 +534,35 @@ bool PhysicsScene3D::Box2Plane(PhysicsObject3D* obj1, PhysicsObject3D* obj2)
 	}
 	return false;
 }
-
+//----------------------------------------------------------------------------------------------
+// Adds an actor from the actor array in the physicsScene
+//
+// Param:
+//		actor: A physicsObject pointer which gets added to the actor array
+//----------------------------------------------------------------------------------------------
 void PhysicsScene3D::addActor(PhysicsObject3D * actor)
 {
 	m_actors.push_back(actor);
 }
+//----------------------------------------------------------------------------------------------
+// Removes an actor from the actor array in the physicsScene
+//
+// Param:
+//		actor: A physicsObject pointer which gets remove from the scene
+//----------------------------------------------------------------------------------------------
 void PhysicsScene3D::removeActor(PhysicsObject3D* actor)
 {
-	std::remove(std::begin(m_actors), std::end(m_actors), actor);
+	delete m_actors.back();
+	m_actors.pop_back();
 }
+//----------------------------------------------------------------------------------------------
+// Updates actors and checks for collision
+//
+// Param:
+//		dt: A float which represents deltatime which increases over time
+//----------------------------------------------------------------------------------------------
 void PhysicsScene3D::update(float dt)
 {
-	static std::list<PhysicsObject3D*> dirty;
-
 	static float accumulatedTime = 0.0f;
 	accumulatedTime += dt;
 
@@ -468,35 +570,15 @@ void PhysicsScene3D::update(float dt)
 	{
 		for (auto pActor : m_actors)
 		{
-			pActor->fixedUpdate(m_gravity, m_timeStep);
+				pActor->fixedUpdate(m_gravity, m_timeStep);
 		}
 		accumulatedTime -= m_timeStep;
 	}
-
 	checkForCollision();
-
-	//check for collisions (ideally you'd want to ahve some sort of scenemanagment in place
-	//for (auto pActor : m_actors) 
-	//{
-	//	for (auto pOther : m_actors) 
-	//	{
-	//		if (pActor == pOther)
-	//			continue;
-	//		if (std::find(dirty.begin(), dirty.end(), pActor) != dirty.end() && std::find(dirty.begin(), dirty.end(), pOther) != dirty.end())
-	//			continue;
-	//		Rigidbody* pRigid = dynamic_cast<Rigidbody*>(pActor);
-	//		if (pRigid->CheckCollision(pOther) == true) 
-	//		{
-	//			pRigid->applyForceToActor(dynamic_cast<Rigidbody*>(pOther),
-	//			pRigid->getVelocity() * pRigid->getMass());
-	//
-	//			dirty.push_back(pRigid);
-	//			dirty.push_back(pOther);
-	//		}
-	//	}
-	//	dirty.clear();
-	//}
 }
+//----------------------------------------------------------------------------------------------
+// Updates each actors gizmos every frame
+//----------------------------------------------------------------------------------------------
 void PhysicsScene3D::updateGizmos()
 {
 	for (auto pActor : m_actors)
@@ -504,6 +586,9 @@ void PhysicsScene3D::updateGizmos()
 		pActor->makeGizmo();
 	}
 }
+//----------------------------------------------------------------------------------------------
+// Used only for debug purpose
+//----------------------------------------------------------------------------------------------
 void PhysicsScene3D::debugScene()
 {
 	int count = 0;

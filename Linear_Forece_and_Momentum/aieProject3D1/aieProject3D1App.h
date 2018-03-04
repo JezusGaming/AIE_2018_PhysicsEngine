@@ -7,6 +7,7 @@
 #include "Plane3D.h"
 #include "Box3D.h"
 #include "BoxOOB.h"
+#include <vector>
 
 class aieProject3D1App : public aie::Application {
 public:
@@ -27,5 +28,10 @@ protected:
 	glm::mat4	m_projectionMatrix;
 	PhysicsScene3D* m_physicsScene;
 
-	glm::vec4 m_clearColour;
+	Sphere3D* sphere;
+	Sphere3D* sphere1;
+	BoxOOB* box;
+	BoxOOB* box1;
+	int circleCounter;
+	Sphere3D* sphereList[5];
 };

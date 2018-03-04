@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <imgui.h>
-#include <vector>
 
 using glm::vec3;
 using glm::vec4;
@@ -34,21 +33,17 @@ bool aieProject3D1App::startup() {
 	m_physicsScene->setGravity(glm::vec3(0, -9.8f, 0));
 	m_physicsScene->setTimeStep(0.01f);
 
-	Sphere3D* sphere;
-	Sphere3D* sphere1;
+
 	sphere = new Sphere3D(glm::vec3(5, 5, 0), glm::vec3(-10, 0, 0), 3.0f, 2, glm::vec4(1, 0, 0, 1));
 	sphere1 = new Sphere3D(glm::vec3(-5, 5, 1), glm::vec3(10, 0, 0), 3.0f, 2, glm::vec4(0, 1, 0, 1));
-	//sphere->applyForce(glm::vec3(-10, 0, 0));
-	//sphere1->applyForce(glm::vec3(10, 0, 0));
+
 	m_physicsScene->addActor(sphere);
 	m_physicsScene->addActor(sphere1);
 
-	BoxOOB* box;
-	BoxOOB* box1;
+	
 	box = new BoxOOB(glm::vec3(-5, 10, 5), glm::vec3(10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(1, 0, 0, 1));
 	box1 = new BoxOOB(glm::vec3(5, 10, 5), glm::vec3(-10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(0, 1, 0, 1));
-	//box->applyForce(glm::vec3(10, 0, 0));
-	//box1->applyForce(glm::vec3(-10, 0, 0));
+
 	m_physicsScene->addActor(box);
 	m_physicsScene->addActor(box1);
 	
@@ -56,35 +51,35 @@ bool aieProject3D1App::startup() {
 	plane = new Plane3D(glm::normalize(glm::vec3(0, 1, 0)), 0);
 	m_physicsScene->addActor(plane);
 
-	m_clearColour = glm::vec4(1, 1, 1, 1);
-
+	circleCounter = 0;
 	return true;
 }
 
 void aieProject3D1App::shutdown() {
 
 	Gizmos::destroy();
+	delete m_physicsScene;
 }
 
 void aieProject3D1App::update(float deltaTime) {
 
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
-	Sphere3D* sphere;
-	std::vector<Sphere3D*> m_spheres;
+	
 	ImGui::Begin("My Options");
-		ImGui::ColorEdit3("clear colour", glm::value_ptr(m_clearColour));
-		if (ImGui::Button("Spawn shape", ImVec2(50, 50)))
+		if (ImGui::Button("Spawn shape", ImVec2(100, 100)))
 		{
-			
-			sphere = new Sphere3D(glm::vec3(0, 15, 0), glm::vec3(0, 0, 0), 3.0f, 2, glm::vec4(0, 0, 1, 1));
-			m_physicsScene->addActor(sphere);
-			m_spheres.push_back(sphere);
+			sphereList[circleCounter] = new Sphere3D(glm::vec3(0, 15, 0), glm::vec3(0, 0, 0), 3.0f, 2, glm::vec4(0, 0, 1, 1));
+			m_physicsScene->addActor(sphereList[circleCounter]);
+			circleCounter++;
 		}
-		if (ImGui::Button("Remove shape", ImVec2(50, 50)))
+		if (ImGui::Button("Remove shape", ImVec2(100, 100)))
 		{
-			m_physicsScene->removeActor(m_spheres[0]);
-			m_spheres.pop_back();
+			if (circleCounter > 0)
+			{
+				m_physicsScene->removeActor(sphereList[circleCounter]);
+				circleCounter--;
+			}
 		}
 	ImGui::End();
 

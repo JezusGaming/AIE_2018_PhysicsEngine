@@ -1,23 +1,32 @@
 #include "BoxOOB.h"
 #include <Gizmos.h>
 
-
+//----------------------------------------------------------------------------------------------
+// constructer initializes values
+//----------------------------------------------------------------------------------------------
 BoxOOB::BoxOOB(glm::vec3 position, glm::vec3 velocity, float mass, float width, float hight, float depth, glm::vec4 colour) : Rigidbody3D(ShapeType::BOX, position, velocity, 0, mass)
 {
 	m_width = width;
 	m_hight = hight;
 	m_depth = depth;
-	//m_dimensions = glm::vec3(m_width, m_hight, m_depth);
 	m_extents = glm::vec3(m_width, m_hight, m_depth);
 	m_colour = colour;
 	m_moment = 1.0f / 12.0f * mass * width * hight;
 }
 
-
+//----------------------------------------------------------------------------------------------
+// defualt destructor
+//----------------------------------------------------------------------------------------------
 BoxOOB::~BoxOOB()
 {
 }
-
+//----------------------------------------------------------------------------------------------
+// Updates the BoxOOB and rigidbody every frame
+//
+// Param:
+//		gravity: A vec3 which sets BoxOOB m_gravity to help apply velocity to objects
+//		timeStep: A float which sets BoxOOB m_timeStep to help apply velocity to objects ect
+//----------------------------------------------------------------------------------------------
 void BoxOOB::fixedUpdate(glm::vec3 gravity, float timeStep)
 {
 	Rigidbody3D::fixedUpdate(gravity, timeStep);
@@ -29,7 +38,9 @@ void BoxOOB::fixedUpdate(glm::vec3 gravity, float timeStep)
 	m_localY = glm::normalize(glm::vec3(-sn, cs, sn));
 	m_localZ = glm::normalize(glm::vec3( sn, -sn, cs));
 }
-
+//----------------------------------------------------------------------------------------------
+// Makes a BoxOOB and draws it
+//----------------------------------------------------------------------------------------------
 void BoxOOB::makeGizmo()
 {
 	// if only using rotation 
@@ -51,7 +62,16 @@ void BoxOOB::makeGizmo()
 		transform[2] = glm::vec4(m_localZ, 0);
 	aie::Gizmos::addAABBFilled(m_postition, m_extents, m_colour,&transform);
 }
-
+//----------------------------------------------------------------------------------------------
+// Checks the box corners for penatration
+//
+// Param:
+//		box: The adress of BoxOOB which used to get extents, position, etc
+//		contact: The adress of vec3 which is the point of contact
+//		numContacts: The adress of int number of contacts occoured
+//		edgeNormal: The adress of vec3 sets the edgenormal
+//		contactForce: The adress of vec3
+//----------------------------------------------------------------------------------------------
 bool BoxOOB::checkBoxCorners(BoxOOB& box, glm::vec3& contact, int& numContacts, glm::vec3& edgeNormal, glm::vec3& contactForce)
 {
 	float minX, maxX, minY, maxY, minZ, maxZ;

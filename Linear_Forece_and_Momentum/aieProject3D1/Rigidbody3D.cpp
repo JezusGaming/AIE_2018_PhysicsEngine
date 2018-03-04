@@ -1,7 +1,9 @@
 #include "Rigidbody3D.h"
 const static float MIN_LINEAR_THRESHOLD;
 const static float MIN_ROTATION_THRESHOLD;
-
+//----------------------------------------------------------------------------------------------
+// constructer initializes values
+//----------------------------------------------------------------------------------------------
 Rigidbody3D::Rigidbody3D(ShapeType shapeID, glm::vec3 position, glm::vec3 velocity, float roation, float mass) : PhysicsObject3D(shapeID)
 {
 	m_postition = position;
@@ -14,11 +16,19 @@ Rigidbody3D::Rigidbody3D(ShapeType shapeID, glm::vec3 position, glm::vec3 veloci
 	m_elasticity = 0.8f;
 	m_angularVelocity = glm::vec3(0.1f);
 }
-
+//----------------------------------------------------------------------------------------------
+// defualt destructor
+//----------------------------------------------------------------------------------------------
 Rigidbody3D::~Rigidbody3D()
 {
 }
-
+//----------------------------------------------------------------------------------------------
+// Updates the rigidbody and it velocity, postion, rotation, and angularvelocity ever frame
+//
+// Param:
+//		gravity: A vec3 which sets Rigidbody m_gravity to help apply velocity to objects
+//		timeStep: A float which sets Rigidbody m_timeStep to help apply velocity to objects ect
+//----------------------------------------------------------------------------------------------
 void Rigidbody3D::fixedUpdate(glm::vec3 gravity, float timeStep)
 {
 	glm::quat xRotation = glm::angleAxis(m_angularVelocity.x * timeStep, glm::vec3(1, 0, 0));
@@ -42,12 +52,20 @@ void Rigidbody3D::fixedUpdate(glm::vec3 gravity, float timeStep)
 		m_angularVelocity = glm::vec3(0,0,0);
 	}
 }
-
+//----------------------------------------------------------------------------------------------
+// Used only for debug purpose
+//----------------------------------------------------------------------------------------------
 void Rigidbody3D::debug()
 {
 
 }
-
+//----------------------------------------------------------------------------------------------
+// Applies force to the rigidbody
+//
+// Param:
+//		force: A vec3 which sets Rigidbody m_velocity and m_angularvelocity
+//		pos: A vec3 which sets Rigidbody m_angularvelocity
+//----------------------------------------------------------------------------------------------
 void Rigidbody3D::applyForce(glm::vec3 force, glm::vec3 pos)
 {
 	m_velocity += force / m_mass;
@@ -65,6 +83,14 @@ void Rigidbody3D::applyForce(glm::vec3 force, glm::vec3 pos)
 //	this->applyForce(-force);
 //}
 
+//----------------------------------------------------------------------------------------------
+// Resolves the collision objects
+//
+// Param:
+//		actor2: A Rigidbody pointer to ther other shape
+//		contact: A vec3 of the contact point of the collision
+//		collisionormal: A vec3 pointer which is used to get the normal
+//----------------------------------------------------------------------------------------------
 void Rigidbody3D::resolveCollision(Rigidbody3D * actor2, glm::vec3 contact, glm::vec3* collisionormal)
 {
 	// find the vector between their centres, or use the provided direction 
