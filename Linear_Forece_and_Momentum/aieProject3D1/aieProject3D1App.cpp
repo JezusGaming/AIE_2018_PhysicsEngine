@@ -40,7 +40,8 @@ bool aieProject3D1App::startup() {
 	m_physicsScene->addActor(sphere);
 	m_physicsScene->addActor(sphere1);
 
-	
+	BoxOOB* box;
+	BoxOOB* box1;
 	box = new BoxOOB(glm::vec3(-5, 10, 5), glm::vec3(10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(1, 0, 0, 1));
 	box1 = new BoxOOB(glm::vec3(5, 10, 5), glm::vec3(-10, 0, 0), 4.0f, 2, 2, 2, glm::vec4(0, 1, 0, 1));
 

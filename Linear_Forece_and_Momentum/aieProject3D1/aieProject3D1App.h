@@ -30,8 +30,6 @@ protected:
 
 	Sphere3D* sphere;
 	Sphere3D* sphere1;
-	BoxOOB* box;
-	BoxOOB* box1;
 	int circleCounter;
 	Sphere3D* sphereList[5];
 };

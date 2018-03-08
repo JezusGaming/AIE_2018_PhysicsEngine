@@ -32,7 +32,7 @@ static fn collisionFunctionArray[] =
 	PhysicsScene3D::plane2Plane, PhysicsScene3D::plane2Sphere, PhysicsScene3D::plane2Box,
 	PhysicsScene3D::sphere2Plane, PhysicsScene3D::sphere2Sphere, PhysicsScene3D::sphere2Box,
 	/*PhysicsScene3D::AABB2Plane, PhysicsScene3D::AABB2Sphere, PhysicsScene3D::AABB2AABB,*/
-	PhysicsScene3D::Box2Box, PhysicsScene3D::Box2Sphere, PhysicsScene3D::Box2Plane
+	PhysicsScene3D::Box2Plane, PhysicsScene3D::Box2Sphere, PhysicsScene3D::Box2Box
 };
 //----------------------------------------------------------------------------------------------
 // Checks for collision iterats through shapes calls a funtionptr which calls one of the many 
